@@ -1,0 +1,4 @@
+telegram
+youtube_transcript_api
+openai
+gTTS
