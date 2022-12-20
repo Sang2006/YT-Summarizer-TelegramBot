@@ -56,7 +56,7 @@ def get_link(update, context):
     model_engine = "text-davinci-003"
 
     stop = '~'
-    prompt = f"Summarize this YouTube video {transcript}~"
+    prompt = f"Summarize this YouTube video and please ignore any sponsor segments{transcript}~"
     words = prompt.split()
     word_count = len(words)
 
@@ -70,7 +70,7 @@ def get_link(update, context):
         return summary
 
     try:
-        completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=200, stop=stop)
+        completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=100, stop=stop)
         #print(completion)
         summary = parse_response(completion)
         print(summary)
