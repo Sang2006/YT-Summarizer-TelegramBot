@@ -31,19 +31,25 @@ def main():
         video_link = update.message.text
 
         # getting the video id
-        parsed_url = urlparse(video_link)
-        query_params = parsed_url.query.split('&')
-        global video_id
-        video_id = None
-        for param in query_params:
-            if param.startswith('v='):
-                try:
-                    video_id = param.split('=')[1]
-                    break
-                except Exception as e:
-                    print('Something went worng')
-                    print(e)
-        chat_id = update.effective_chat.id
+        try:
+            parsed_url = urlparse(video_link)
+            query_params = parsed_url.query.split('&')
+            video_id = None
+            for param in query_params:
+                if param.startswith('v='):
+                    try:
+                        video_id = param.split('=')[1]
+                        break
+                    except Exception as e:
+                        print('Something went wrong while extracting the video ID')
+                        print(e)
+                        video_id = None
+            if video_id is None:
+                raise ValueError('Could not find the video ID in the link')
+        except Exception as e:
+            print('Something went wrong while processing the YouTube link')
+            print(e)
+            video_id = None
 
         # getting the trascript
         data = YouTubeTranscriptApi.get_transcript(video_id)
