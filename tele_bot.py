@@ -56,8 +56,8 @@ def main():
 
         model_engine = "text-davinci-003"
 
-        stop = '~'
-        prompt = f"Summarize this YouTube video and please ignore any sponsor segments{transcript}~"
+        stop = '~!?`'
+        prompt = f"Summarize this YouTube video and please ignore any sponsor segments{transcript}~!?`"
         words = prompt.split()
         word_count = len(words)
 
