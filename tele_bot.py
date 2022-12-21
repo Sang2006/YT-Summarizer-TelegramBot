@@ -28,28 +28,30 @@ def main():
         return VIDEO_LINK_STATE
 
     def get_link(update, context):
+        chat_id = update.effective_chat.id
         video_link = update.message.text
 
         # getting the video id
-        try:
-            parsed_url = urlparse(video_link)
-            query_params = parsed_url.query.split('&')
-            video_id = None
-            for param in query_params:
-                if param.startswith('v='):
-                    try:
-                        video_id = param.split('=')[1]
-                        break
-                    except Exception as e:
-                        print('Something went wrong while extracting the video ID')
-                        print(e)
-                        video_id = None
-            if video_id is None:
-                raise ValueError('Could not find the video ID in the link')
-        except Exception as e:
-            print('Something went wrong while processing the YouTube link')
-            print(e)
-            video_id = None
+        parsed_url = urlparse(video_link)
+        query_params = parsed_url.query.split('&')
+        global video_id
+        video_id = None
+        for param in query_params:
+            if param.startswith('v='):
+                try:
+                    video_id = param.split('=')[1]
+                    print(f"Video link : {video_link}")
+                    print(f"Video id : {video_id}")
+                    break
+                except Exception as e:
+                    print('Something went worng')
+                    print(e)
+            elif AssertionError:
+                print('User did not input a valid url')
+                print('Asking the user to input a new url')
+                context.bot.send_message(chat_id=chat_id, text=f"'{video_link}' is not a valid YouTube link!")
+                context.bot.send_message(chat_id=chat_id, text='Please check the link and try again')
+        chat_id = update.effective_chat.id
 
         # getting the trascript
         data = YouTubeTranscriptApi.get_transcript(video_id)
@@ -78,6 +80,7 @@ def main():
 
         try:
             completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=100, stop=stop)
+            print('Generating summary...')
             #print(completion)
             summary = parse_response(completion)
             print(summary)
@@ -86,12 +89,14 @@ def main():
             print(e)
 
         context.bot.send_message(chat_id=chat_id, text=summary)
+
         # Generating an audio file    
         tts_text = summary
         tts = gTTS(tts_text)
         tts.save("summary.mp3")
         with open('summary.mp3', 'rb') as f:
             context.bot.send_audio(chat_id=chat_id, audio=f)
+        print('Uploaded audio file')
         return ConversationHandler.END
 
     conversation_handler = ConversationHandler(
@@ -116,6 +121,7 @@ def main():
     summarize_handler = CommandHandler("summarize", summarize)
     dispatcher.add_handler(summarize_handler)
 
+    print('Successfully started the bot :D')
     updater.start_polling()
     updater.idle()
 
