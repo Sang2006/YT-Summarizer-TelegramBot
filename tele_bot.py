@@ -19,7 +19,7 @@ def main():
 
     def help(update, context):
         chat_id = update.effective_chat.id
-        context.bot.send_message(chat_id=chat_id, text="This is a YouTube video summarizer bot that uses video transcripts to generate a summarized version of the video")
+        context.bot.send_message(chat_id=chat_id, text="This is a chatbot that summarizes YouTube videos. When the chatbot receives a command to summarize a video, it prompts the user to input a YouTube link. It then extracts the video's transcript using the YouTubeTranscriptApi library, and sends the transcript to the OpenAI API to generate a summary of the video. Finally, the chatbot sends the summary back to the user and creates an audio file using the gTTS library.")
 
     def summarize(update, context):
         chat_id = update.effective_chat.id
