@@ -79,7 +79,7 @@ def main():
             return summary
 
         try:
-            completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=100, stop=stop)
+            completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=200, stop=stop)
             print('Generating summary...')
             #print(completion)
             summary = parse_response(completion)
