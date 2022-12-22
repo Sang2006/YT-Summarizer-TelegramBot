@@ -31,6 +31,10 @@ def main():
         chat_id = update.effective_chat.id
         video_link = update.message.text
 
+        if video_link == '/cancel':
+            update.message.reply_text('Conversation canceled.')
+            return ConversationHandler.END
+
         # getting the video id
         parsed_url = urlparse(video_link)
         query_params = parsed_url.query.split('&')
@@ -40,17 +44,22 @@ def main():
             if param.startswith('v='):
                 try:
                     video_id = param.split('=')[1]
+                    # Ensure that video_id is a string
+                    video_id = str(video_id)
                     print(f"Video link : {video_link}")
                     print(f"Video id : {video_id}")
                     break
                 except Exception as e:
-                    print('Something went worng')
+                    print('Something went wrong')
                     print(e)
-            elif AssertionError:
-                print('User did not input a valid url')
-                print('Asking the user to input a new url')
-                context.bot.send_message(chat_id=chat_id, text=f"'{video_link}' is not a valid YouTube link!")
-                context.bot.send_message(chat_id=chat_id, text='Please check the link and try again')
+        # Handle the AssertionError
+        try:
+            assert isinstance(video_id, str), "`video_id` must be a string"
+        except AssertionError:
+            print('User did not input a valid url')
+            print('Asking the user to input a new url')
+            context.bot.send_message(chat_id=chat_id, text=f"'{video_link}' is not a valid YouTube link!")
+            context.bot.send_message(chat_id=chat_id, text='Please check the link and try again')
         chat_id = update.effective_chat.id
 
         # getting the trascript
@@ -79,7 +88,7 @@ def main():
             return summary
 
         try:
-            completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=100, stop=stop)
+            completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=200, stop=stop)
             print('Generating summary...')
             #print(completion)
             summary = parse_response(completion)
@@ -99,12 +108,16 @@ def main():
         print('Uploaded audio file')
         return ConversationHandler.END
 
+    def cancel(update, context):
+        update.message.reply_text('Conversation canceled.')
+        return ConversationHandler.END
+
     conversation_handler = ConversationHandler(
     entry_points=[CommandHandler("summarize", summarize)],
     states={
         VIDEO_LINK_STATE: [MessageHandler(Filters.text, get_link)],
     },
-    fallbacks=[]
+    fallbacks=[CommandHandler('cancel', cancel)]
     )
 
     updater = Updater(token="5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE", use_context=True)
@@ -120,6 +133,9 @@ def main():
 
     summarize_handler = CommandHandler("summarize", summarize)
     dispatcher.add_handler(summarize_handler)
+
+    cancel_handler = CommandHandler("cancel", cancel)
+    dispatcher.add_handler(cancel_handler)
 
     print('Successfully started the bot :D')
     updater.start_polling()
