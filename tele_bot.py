@@ -6,6 +6,7 @@ import openai
 from gtts import gTTS
 import os
 
+
 bot = Bot(token='5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE')
 VIDEO_LINK_STATE = 1
 video_link = ''
@@ -15,11 +16,11 @@ def main():
 
     def start(update, context):
         chat_id = update.effective_chat.id
-        context.bot.send_message(chat_id=chat_id, text="Hello I'm a YouTube video summarizer bot!\n\nPlease select an option.\n\n/start\n/help\n/summarize\n\n\nCreated by Sangeeth")
+        context.bot.send_message(chat_id=chat_id, text="Hello I'm a YouTube video summarizer bot!\n\nPlease select an option.\n\n/start\n/help\n/summarize\n\nIf you want to stop using the bot type /cancel at any point")
 
     def help(update, context):
         chat_id = update.effective_chat.id
-        context.bot.send_message(chat_id=chat_id, text="This is a chatbot that summarizes YouTube videos. When the chatbot receives a command to summarize a video, it prompts the user to input a YouTube link. It then extracts the video's transcript using the YouTubeTranscriptApi library, and sends the transcript to the OpenAI API to generate a summary of the video. Finally, the chatbot sends the summary back to the user and creates an audio file using the gTTS library.")
+        context.bot.send_message(chat_id=chat_id, text="This is a chatbot that summarizes YouTube videos. When the chatbot receives a command to summarize a video, it prompts the user to input a YouTube link. It then extracts the video's transcript using the YouTubeTranscriptApi library, and sends the transcript to the OpenAI API to generate a summary of the video. Finally, the chatbot sends the summary back to the user and creates an audio file using the gTTS library.\n\nCoded by - Sangeeth\nE-mail - sangeethudayanga123@gmail.com\nTelegram - @SangeethKarasinghe")
 
     def summarize(update, context):
         chat_id = update.effective_chat.id
@@ -89,8 +90,9 @@ def main():
             return summary
 
         try:
-            completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=200, stop=stop)
             print('Generating summary...')
+            context.bot.send_message(chat_id=chat_id, text='Generating summary...')
+            completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=200, stop=stop)
             #print(completion)
             summary = parse_response(completion)
             print(summary)
@@ -98,6 +100,7 @@ def main():
             print('Something went wrong')
             print(e)
 
+        
         context.bot.send_message(chat_id=chat_id, text=summary)
 
         # Generating an audio file    
@@ -107,6 +110,8 @@ def main():
         with open('summary.mp3', 'rb') as f:
             context.bot.send_audio(chat_id=chat_id, audio=f)
         print('Uploaded audio file')
+        os.remove('summary.mp3')
+        print('Audio file deleted')
         return ConversationHandler.END
 
     def cancel(update, context):
