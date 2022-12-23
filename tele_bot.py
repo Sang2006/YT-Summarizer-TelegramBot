@@ -60,6 +60,7 @@ def main():
             print('Asking the user to input a new url')
             context.bot.send_message(chat_id=chat_id, text=f"'{video_link}' is not a valid YouTube link!")
             context.bot.send_message(chat_id=chat_id, text='Please check the link and try again')
+            context.bot.send_message(chat_id=chat_id, text='Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ')
         chat_id = update.effective_chat.id
 
         # getting the trascript
