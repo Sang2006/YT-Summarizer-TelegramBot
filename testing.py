@@ -1,33 +1,14 @@
-from urllib.parse import urlparse
+from telegram import Bot
+from time import sleep
+bot = Bot(token='5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE')
+chat_id = 1402412411
 
-video_link =  input('Enter video link : ')
+# Send a message to the user
+message = bot.send_message(chat_id=chat_id, text="Original message")
 
-parsed_url = urlparse(video_link)
-query_params = parsed_url.query.split('&')
+# Get the message_id of the message
+message_id = message.message_id
+sleep(5)
 
-video_id = None
-
-if parsed_url.netloc == 'youtu.be':
-    video_id = parsed_url.path.split('/')[-1]
-    print(f"Video link : {video_link}")
-    print(f"Video id : {video_id}")
-else:
-    for param in query_params:
-        if param.startswith('v='):
-            try:
-                video_id = param.split('=')[1]
-                # ensure that video_id is a string
-                video_id = str(video_id)
-                print(f"Video link : {video_link}")
-                print(f"Video id : {video_id}")
-                break
-            except Exception as e:
-                print('Something went wrong')
-                print(e)
-
-# handle the AssertionError
-try:
-    assert isinstance(video_id, str), "`video_id` must be a string"
-except AssertionError:
-    print('User did not input a valid url')
-    print('Asking the user to input a new url')
+# Edit the message using the message_id
+bot.edit_message_text(chat_id=chat_id, message_id=message_id, text="Edited message")

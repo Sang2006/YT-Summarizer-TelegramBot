@@ -100,7 +100,7 @@ def main():
 
         try:
             print('Generating summary...')
-            context.bot.send_message(chat_id=chat_id, text='Generating summary...')
+            sum_mes = context.bot.send_message(chat_id=chat_id, text='Generating summary...')
             completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=200, stop=stop)
             #print(completion)
             summary = parse_response(completion)
@@ -110,8 +110,9 @@ def main():
             print(e)
             context.bot.send_message(chat_id=chat_id, text='An internal error has occured!\nPlease contact @SangeethKarasinghe for help.')
 
-        
-        context.bot.send_message(chat_id=chat_id, text=summary)
+        # sneding summary to the user
+        message_id = sum_mes.message_id
+        bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=summary)
 
         # Generating an audio file    
         tts_text = summary
