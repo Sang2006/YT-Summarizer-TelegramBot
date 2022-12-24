@@ -60,14 +60,17 @@ def main():
                         print(e)
         
         # Handle the AssertionError
+        link_promts = 0
         try:
             assert isinstance(video_id, str), "`video_id` must be a string"
         except AssertionError:
+            link_promts += 1
             print('User did not input a valid url')
             print('Asking the user to input a new url')
             context.bot.send_message(chat_id=chat_id, text=f"'{video_link}' is not a valid YouTube link!")
             context.bot.send_message(chat_id=chat_id, text='Please check the link and try again')
-            context.bot.send_message(chat_id=chat_id, text='Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ')
+            if link_promts == 1:
+                context.bot.send_message(chat_id=chat_id, text='Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ')
         chat_id = update.effective_chat.id
 
         # getting the trascript
