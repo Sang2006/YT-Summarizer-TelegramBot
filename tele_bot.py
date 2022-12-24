@@ -39,29 +39,26 @@ def main():
         # getting the video id
         parsed_url = urlparse(video_link)
         query_params = parsed_url.query.split('&')
-        global video_id
         video_id = None
-        for param in query_params:
-            if param.startswith('v='):
-                try:
-                    video_id = param.split('=')[1]
-                    # Ensure that video_id is a string
-                    video_id = str(video_id)
-                    print(f"Video link : {video_link}")
-                    print(f"Video id : {video_id}")
-                    break
-                except Exception as e:
-                    print('Something went wrong')
-                    print(e)
-            else:
-                try:
-                    video_id = video_link[17:]
-                    print(f"Video link : {video_link}")
-                    print(f"Video id : {video_id}")
-                    break
-                except Exception as e:
-                    print('Something went wrong')
-            print(e)
+
+        if parsed_url.netloc == 'youtu.be':
+            video_id = parsed_url.path.split('/')[-1]
+            print(f"Video link : {video_link}")
+            print(f"Video id : {video_id}")
+        else:
+            for param in query_params:
+                if param.startswith('v='):
+                    try:
+                        video_id = param.split('=')[1]
+                        # ensure that video_id is a string
+                        video_id = str(video_id)
+                        print(f"Video link : {video_link}")
+                        print(f"Video id : {video_id}")
+                        break
+                    except Exception as e:
+                        print('Something went wrong')
+                        print(e)
+        
         # Handle the AssertionError
         try:
             assert isinstance(video_id, str), "`video_id` must be a string"
@@ -85,7 +82,7 @@ def main():
         model_engine = "text-davinci-003"
 
         stop = '~!?`'
-        prompt = f"Summarize this YouTube video and please ignore any sponsor segments{transcript}~!?`"
+        prompt = f"Summarize this YouTube video and please ignore any sponsor segments and ignore any self promotions{transcript}~!?`"
         words = prompt.split()
         word_count = len(words)
 
@@ -108,6 +105,7 @@ def main():
         except Exception as e:
             print('Something went wrong')
             print(e)
+            context.bot.send_message(chat_id=chat_id, text='An internal error has occured!\nPlease contact @SangeethKarasinghe for help.')
 
         
         context.bot.send_message(chat_id=chat_id, text=summary)

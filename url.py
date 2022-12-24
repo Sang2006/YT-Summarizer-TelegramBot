@@ -18,14 +18,14 @@ for param in query_params:
         except Exception as e:
             print('Something went wrong')
             print(e)
-    else:
-        try:
-            video_id = video_link[17:]
-            print(f"Video link : {video_link}")
-            print(f"Video id : {video_id}")
-            break
-        except Exception as e:
-            print('Something went wrong')
-            print(e)
+    # else:
+    #     try:
+    #         video_id = video_link[17:]
+    #         print(f"Video link : {video_link}")
+    #         print(f"Video id : {video_id}")
+    #         break
+    #     except Exception as e:
+    #         print('Something went wrong')
+    #         print(e)
             
  
