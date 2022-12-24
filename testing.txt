@@ -1,3 +1,0 @@
-sent = bot.sendMessage(9999999, "Testing")
-edited = telepot.message_identifier(sent)
-bot.editMessageText(edited, "Tested")
