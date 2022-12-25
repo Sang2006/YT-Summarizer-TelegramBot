@@ -1,6 +1,6 @@
 from telegram import Bot
 from time import sleep
-bot = Bot(token='5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE')
+bot = Bot(token=os.environ['BOT_TOKEN'])
 chat_id = 1402412411
 
 # Send a message to the user
