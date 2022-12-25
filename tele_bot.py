@@ -7,7 +7,7 @@ from gtts import gTTS
 import os
 
 
-bot = Bot(token='5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE')
+bot = Bot(token= os.production[BOT_TOKEN])
 VIDEO_LINK_STATE = 1
 video_link = ''
 
@@ -137,7 +137,7 @@ def main():
     fallbacks=[CommandHandler('cancel', cancel)]
     )
 
-    updater = Updater(token="5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE", use_context=True)
+    updater = Updater(token=os.production[BOT_TOKEN], use_context=True)
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(conversation_handler)
