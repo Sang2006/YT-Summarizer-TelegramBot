@@ -5,7 +5,6 @@ from youtube_transcript_api import YouTubeTranscriptApi
 import openai
 from gtts import gTTS
 import os
-from time import sleep
 
 
 bot = Bot(token= os.environ['BOT_TOKEN'])
@@ -78,7 +77,7 @@ def main():
         data = YouTubeTranscriptApi.get_transcript(video_id)
         
         # checking if transcript is available
-        if not data
+        if not data:
             context.bot.send_message(chat_id=chat_id, text="Sorry, this video does not have a transcript available.")
             return
         
