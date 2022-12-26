@@ -76,6 +76,14 @@ def main():
 
         # getting the trascript
         data = YouTubeTranscriptApi.get_transcript(video_id)
+        
+        # checking if transcript is available
+        if not data
+            context.bot.send_message(chat_id=chat_id, text="Sorry, this video does not have a transcript available.")
+            return
+        
+        # if yes continue
+        
         transcript = ""
         for d in data:
             transcript += d['text'] + " "
