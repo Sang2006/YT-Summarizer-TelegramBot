@@ -2,7 +2,7 @@ from trans import transcript
 import openai
 
 
-openai.api_key = "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"
+openai.api_key = os.environ['OPEN_AI_API']
 
 model_engine = "text-davinci-003"
 

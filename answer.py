@@ -1,7 +1,7 @@
 from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHandler, Filters
 from telegram import Bot
 
-bot = Bot(token='5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE')
+bot = Bot(token=os.environ['BOT_TOKEN'])
 VIDEO_LINK_STATE = 1
 
 # Start
@@ -36,7 +36,7 @@ conversation_handler = ConversationHandler(
   fallbacks=[]
 )
 
-updater = Updater(token="5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE", use_context=True)
+updater = Updater(token=os.environ['BOT_TOKEN'], use_context=True)
 dispatcher = updater.dispatcher
 
 dispatcher.add_handler(conversation_handler)
