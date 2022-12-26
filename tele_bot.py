@@ -6,6 +6,7 @@ from youtube_transcript_api._errors import TranscriptsDisabled
 import openai
 from gtts import gTTS
 import os
+from googleapiclient.discovery import build
 
 
 bot = Bot(token= os.environ['BOT_TOKEN'])
@@ -15,11 +16,25 @@ video_link = ''
 def main():
     # Start
     def handle_transcripts_disabled(update, context):
-        print('This video does not support transcript')
-        print('Asking the user to enter a new video...')
-        chat_id = update.effective_chat.id
-        context.bot.send_message(chat_id=chat_id, text="Sorry, we were unable to retrieve a transcript for this video. Please make sure that subtitles are enabled for this video and try again.")
+        """Handle the TranscriptsDisabled error."""
+        print("This video does not support transcript")
+        print("Asking the user to input a valid url...")
+        error = context.error
+        if isinstance(error, TranscriptsDisabled):
+            chat_id = update.effective_chat.id
+            context.bot.send_message(chat_id=chat_id, text="Sorry, we were unable to retrieve a transcript for this video.")
+            context.bot.send_message(chat_id=chat_id, text="Please make sure that subtitles are enabled for this video and try again.")
 
+    def handle_assertion_error(update, context):
+        """Handle an Assertion error"""
+        print("An Assertion Error has occurred")
+        print("Asking the user to input a valid url...")
+        error = context.error
+        if isinstance(error, AssertionError):
+            chat_id = update.effective_chat.id
+            context.bot.send_message(chat_id=chat_id, text="Sorry, the link you provided is not a valid YouTube link.")
+            context.bot.send_message(chat_id=chat_id, text="Please check the link and try again.")
+    
     def start(update, context):
         chat_id = update.effective_chat.id
         context.bot.send_message(chat_id=chat_id, text="Hello I'm a YouTube video summarizer bot!\n\nPlease select an option.\n\n/start\n/help\n/summarize\n\nIf you want to stop using the bot type /cancel at any point")
@@ -65,27 +80,10 @@ def main():
                         print('Something went wrong')
                         print(e)
         
-        # Handle the AssertionError
-        link_promts = 0
-        try:
-            assert isinstance(video_id, str), "`video_id` must be a string"
-        except AssertionError:
-            link_promts += 1
-            print('User did not input a valid url')
-            print('Asking the user to input a new url')
-            context.bot.send_message(chat_id=chat_id, text=f"'{video_link}' is not a valid YouTube link!")
-            context.bot.send_message(chat_id=chat_id, text='Please check the link and try again')
-            if link_promts == 1:
-                context.bot.send_message(chat_id=chat_id, text='Example: https://www.youtube.com/watch?v=dQw4w9WgXcQ')
         chat_id = update.effective_chat.id
 
         # getting the trascript
         data = YouTubeTranscriptApi.get_transcript(video_id)
-        
-        # checking if transcript is available
-        if not data:
-            context.bot.send_message(chat_id=chat_id, text="Sorry, this video does not have a transcript available.")
-            return
         
         # if yes continue
         
@@ -119,15 +117,30 @@ def main():
             #print(completion)
             summary = parse_response(completion)
             print(summary)
+            api_key = os.environ['YOUTUBE_API_KEY']
+            youtube = build('youtube', 'v3', developerKey=api_key)
+            
+            # getting the title
+            def get_video_title(video_id):
+                request = youtube.videos().list(part="snippet", id=video_id)
+                response = request.execute()
+                
+                title = response['items'][0]['snippet']['title']
+                return title
+            
+            # calling the function
+            title = get_video_title(video_id)
+            
         except Exception as e:
             print('Something went wrong')
             print(e)
             context.bot.send_message(chat_id=chat_id, text='An internal error has occured!\nPlease contact @SangeethKarasinghe for help.')
 
         # sneding summary to the user
+        sending_sum = f"{title}\n\n{summary}\n\nVideo link : {video_link}"
         message_id = sum_mes.message_id
         bot.delete_message(chat_id=chat_id, message_id=message_id)
-        bot.send_message(chat_id=chat_id , text=summary)
+        bot.send_message(chat_id=chat_id , text=sending_sum)
 
         # Generating an audio file    
         tts_text = summary
@@ -154,6 +167,8 @@ def main():
 
     updater = Updater(token=os.environ['BOT_TOKEN'], use_context=True)
     dispatcher = updater.dispatcher
+    
+    dispatcher.add_error_handler(handle_assertion_error, AssertionError) # Error handler for assertion error
 
     dispatcher.add_handler(conversation_handler)
 
