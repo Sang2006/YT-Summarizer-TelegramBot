@@ -2,6 +2,7 @@ from telegram.ext import Updater, CommandHandler, ConversationHandler, MessageHa
 from telegram import Bot
 from urllib.parse import urlparse
 from youtube_transcript_api import YouTubeTranscriptApi
+from youtube_transcript_api._errors import TranscriptsDisabled
 import openai
 from gtts import gTTS
 import os
@@ -13,6 +14,9 @@ video_link = ''
 
 def main():
     # Start
+    def handle_transcripts_disabled(update, context):
+        chat_id = update.effective_chat.id
+        context.bot.send_message(chat_id=chat_id, text="Sorry, we were unable to retrieve a transcript for this video. Please make sure that subtitles are enabled for this video and try again.")
 
     def start(update, context):
         chat_id = update.effective_chat.id
@@ -150,6 +154,8 @@ def main():
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(conversation_handler)
+
+    dispatcher.add_error_handler(handle_transcripts_disabled, TranscriptsDisabled)
 
     start_handler = CommandHandler("start", start)
     dispatcher.add_handler(start_handler)
