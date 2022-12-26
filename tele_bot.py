@@ -5,9 +5,10 @@ from youtube_transcript_api import YouTubeTranscriptApi
 import openai
 from gtts import gTTS
 import os
+from time import sleep
 
 
-bot = Bot(token='5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE')
+bot = Bot(token= os.environ['BOT_TOKEN'])
 VIDEO_LINK_STATE = 1
 video_link = ''
 
@@ -80,7 +81,7 @@ def main():
             transcript += d['text'] + " "
 
         # summarizing
-        openai.api_key = "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"
+        openai.api_key = os.environ['OPEN_AI_API']
 
         model_engine = "text-davinci-003"
 
@@ -100,7 +101,7 @@ def main():
 
         try:
             print('Generating summary...')
-            sum_mes = context.bot.send_message(chat_id=chat_id, text='Generating summary...')
+            sum_mes = context.bot.send_sticker(chat_id, 'CAACAgIAAxkBAAEHAbNjqSWVYVI1RgovTHecuzzfpUbmvwACBgADwDZPE8fKovSybnB2LAQ')
             completion = openai.Completion.create(engine=model_engine, prompt=prompt, max_tokens=200, stop=stop)
             #print(completion)
             summary = parse_response(completion)
@@ -112,7 +113,8 @@ def main():
 
         # sneding summary to the user
         message_id = sum_mes.message_id
-        bot.edit_message_text(chat_id=chat_id, message_id=message_id, text=summary)
+        bot.delete_message(chat_id=chat_id, message_id=message_id)
+        bot.send_message(chat_id=chat_id , text=summary)
 
         # Generating an audio file    
         tts_text = summary
@@ -137,7 +139,7 @@ def main():
     fallbacks=[CommandHandler('cancel', cancel)]
     )
 
-    updater = Updater(token="5522976180:AAFzWAHrgs9T8I1WTG8mwQ9FgHDDe5Cz0hE", use_context=True)
+    updater = Updater(token=os.environ['BOT_TOKEN'], use_context=True)
     dispatcher = updater.dispatcher
 
     dispatcher.add_handler(conversation_handler)
