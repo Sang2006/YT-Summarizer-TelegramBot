@@ -15,6 +15,8 @@ video_link = ''
 def main():
     # Start
     def handle_transcripts_disabled(update, context):
+        print('This video does not support transcript')
+        print('Asking the user to enter a new video...')
         chat_id = update.effective_chat.id
         context.bot.send_message(chat_id=chat_id, text="Sorry, we were unable to retrieve a transcript for this video. Please make sure that subtitles are enabled for this video and try again.")
 
@@ -155,7 +157,7 @@ def main():
 
     dispatcher.add_handler(conversation_handler)
 
-    dispatcher.add_error_handler(handle_transcripts_disabled, TranscriptsDisabled)
+    dispatcher.add_error_handler(handle_transcripts_disabled, TranscriptsDisabled) # Error handler for transcript disabled
 
     start_handler = CommandHandler("start", start)
     dispatcher.add_handler(start_handler)
