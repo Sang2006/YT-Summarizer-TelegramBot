@@ -152,7 +152,7 @@ def main():
         with open('thumbnail.jpg', 'rb') as photo:
             context.bot.send_photo(chat_id=chat_id, photo=photo, caption=sending_sum)
             
-        os.remove('thumbnail.mp3')
+        os.remove('thumbnail.jpg')
 
         # Generating an audio file    
         tts_text = summary
