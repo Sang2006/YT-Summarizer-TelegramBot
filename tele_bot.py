@@ -18,21 +18,21 @@ def main():
     # Start
     def handle_transcripts_disabled(update, context):
         """Handle the TranscriptsDisabled error."""
-        print("This video does not support transcript")
-        print("Asking the user to input a valid url...")
         error = context.error
         if isinstance(error, TranscriptsDisabled):
             chat_id = update.effective_chat.id
+            print("This video does not support transcript")
+            print("Asking the user to input a valid url...")
             context.bot.send_message(chat_id=chat_id, text="Sorry, we were unable to retrieve a transcript for this video.")
             context.bot.send_message(chat_id=chat_id, text="Please make sure that subtitles are enabled for this video and try again.")
 
     def handle_assertion_error(update, context):
         """Handle an Assertion error"""
-        print("An Assertion Error has occurred")
-        print("Asking the user to input a valid url...")
         error = context.error
         if isinstance(error, AssertionError):
             chat_id = update.effective_chat.id
+            print("An Assertion Error has occurred")
+            print("Asking the user to input a valid url...")
             context.bot.send_message(chat_id=chat_id, text="Sorry, the link you provided is not a valid YouTube link.")
             context.bot.send_message(chat_id=chat_id, text="Please check the link and try again.")
     
@@ -141,8 +141,18 @@ def main():
         sending_sum = f"{title}\n\n{summary}"
         message_id = sum_mes.message_id
         bot.delete_message(chat_id=chat_id, message_id=message_id)
-        bot.send_photo(chat_id=chat_id, image="image.jpg", caption=sending_sum)
-        bot.send_message(chat_id=chat_id , text=sending_sum)
+        # getting the youtube thumbnail
+        response = requests.get(f"https://img.youtube.com/vi/{video_id}/maxresdefault.jpg")
+        if response.status_code == 200:
+            image_data = response.content
+        
+        with open("thumbnail.jpg", "wb") as image:
+            image.write(image_data)
+        
+        with open('thumbnail.jpg', 'rb') as photo:
+            context.bot.send_photo(chat_id=chat_id, photo=photo, caption=sending_sum)
+            
+        os.remove('thumbnail.mp3')
 
         # Generating an audio file    
         tts_text = summary
