@@ -141,7 +141,7 @@ def main():
         sending_sum = f"{title}\n\n{summary}"
         message_id = sum_mes.message_id
         bot.delete_message(chat_id=chat_id, message_id=message_id)
-        bot.send_photo(chat_id=chat_id, photo=open("image.jpg", "rb"), caption=sending_sum)
+        bot.send_photo(chat_id=chat_id, image="image.jpg", caption=sending_sum)
         bot.send_message(chat_id=chat_id , text=sending_sum)
 
         # Generating an audio file    
