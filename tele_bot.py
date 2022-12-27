@@ -7,6 +7,7 @@ import openai
 from gtts import gTTS
 import os
 from googleapiclient.discovery import build
+import requests
 
 
 bot = Bot(token= os.environ['BOT_TOKEN'])
@@ -137,9 +138,10 @@ def main():
             context.bot.send_message(chat_id=chat_id, text='An internal error has occured!\nPlease contact @SangeethKarasinghe for help.')
 
         # sneding summary to the user
-        sending_sum = f"{title}\n\n{summary}\n\nVideo link : {video_link}"
+        sending_sum = f"{title}\n\n{summary}"
         message_id = sum_mes.message_id
         bot.delete_message(chat_id=chat_id, message_id=message_id)
+        bot.send_photo(chat_id=chat_id, photo=open("image.jpg", "rb"), caption=sending_sum)
         bot.send_message(chat_id=chat_id , text=sending_sum)
 
         # Generating an audio file    
