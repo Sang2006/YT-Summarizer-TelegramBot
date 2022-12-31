@@ -8,8 +8,9 @@ from gtts import gTTS
 import os
 from googleapiclient.discovery import build
 import requests
+from dotenv import load_dotenv
 
-
+load_dotenv()
 bot = Bot(token= os.environ['BOT_TOKEN'])
 VIDEO_LINK_STATE = 1
 video_link = ''
@@ -91,6 +92,7 @@ def main():
         transcript = ""
         for d in data:
             transcript += d['text'] + " "
+        print('Transcript has been downloaded')
 
         # summarizing
         openai.api_key = os.environ['OPEN_AI_API']
@@ -152,10 +154,11 @@ def main():
         with open('thumbnail.jpg', 'rb') as photo:
             context.bot.send_photo(chat_id=chat_id, photo=photo, caption=sending_sum)
             
-        os.remove('thumbnail.mp3')
+        os.remove('thumbnail.jpg')
 
         # Generating an audio file    
         tts_text = summary
+        print('Generating tts...')
         tts = gTTS(tts_text)
         tts.save("summary.mp3")
         with open('summary.mp3', 'rb') as f:
@@ -164,6 +167,7 @@ def main():
         os.remove('summary.mp3')
         print('Audio file deleted')
         return ConversationHandler.END
+    
 
     def cancel(update, context):
         update.message.reply_text('Conversation canceled.')
