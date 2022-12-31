@@ -93,6 +93,30 @@ def main():
         for d in data:
             transcript += d['text'] + " "
         print('Transcript has been downloaded')
+        
+        # getting the title                  
+        api_key = os.environ['YOUTUBE_API_KEY']
+        youtube = build('youtube', 'v3', developerKey=api_key)
+        
+        # getting the title
+        def get_video_title(video_id):
+            request = youtube.videos().list(part="snippet", id=video_id)
+            response = request.execute()
+            
+            title = response['items'][0]['snippet']['title']
+            return title
+        
+        #getting chanel name
+        def chanel_name(video_id):
+            request = youtube.videos().list(part="snippet", id=video_id)
+            response = request.execute()
+            
+            creator = response['items'][0]['snippet']['channelTitle']
+            return creator
+        
+        # calling the functions
+        title = get_video_title(video_id)
+        creator = chanel_name(video_id)
 
         # summarizing
         openai.api_key = os.environ['OPEN_AI_API']
@@ -100,7 +124,7 @@ def main():
         model_engine = "text-davinci-003"
 
         stop = '~!?`'
-        prompt = f"Summarize this YouTube video and please ignore any sponsor segments and ignore any self promotions{transcript}~!?`"
+        prompt = f"Summarize this YouTube video and please ignore any sponsor segments and ignore any self promotions and also the creator of the video is {creator}. here is the transcript {transcript}~!?`"
         words = prompt.split()
         word_count = len(words)
 
@@ -120,19 +144,6 @@ def main():
             #print(completion)
             summary = parse_response(completion)
             print(summary)
-            api_key = os.environ['YOUTUBE_API_KEY']
-            youtube = build('youtube', 'v3', developerKey=api_key)
-            
-            # getting the title
-            def get_video_title(video_id):
-                request = youtube.videos().list(part="snippet", id=video_id)
-                response = request.execute()
-                
-                title = response['items'][0]['snippet']['title']
-                return title
-            
-            # calling the function
-            title = get_video_title(video_id)
             
         except Exception as e:
             print('Something went wrong')
