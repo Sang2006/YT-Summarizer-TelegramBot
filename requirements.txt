@@ -2,7 +2,7 @@ telegram
 youtube_transcript_api
 openai
 gTTS
-python-telegram-bot
+python-telegram-bot==13.7
 google-auth-oauthlib 
 google-auth-httplib2 
 google-api-python-client

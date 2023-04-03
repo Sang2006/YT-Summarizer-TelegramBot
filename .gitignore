@@ -5,3 +5,4 @@ testing.py
 trans.py
 url_testing.py
 url.py
+test_telebot.py
